@@ -1,6 +1,7 @@
 use crate::adb::Adb;
 use crate::adb::device::AdbDevice;
 use crate::context::Context;
+use crate::tui::notice::Notice;
 use crate::tui::{STYLE_BG_TEXT, STYLE_ERROR, STYLE_HIGHLIGHT, STYLE_SELECTION};
 use futures::StreamExt;
 use indexmap::IndexMap;
@@ -9,7 +10,7 @@ use ratatui::crossterm::event::{Event, EventStream, KeyCode, KeyEventKind};
 use ratatui::prelude::*;
 use ratatui::widgets::{Block, Paragraph, Row, Table, TableState};
 use std::ops::ControlFlow;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use tokio::select;
 use tokio::time::MissedTickBehavior;
 
@@ -39,33 +40,14 @@ pub struct DevicePicker {
     mcp_url: String,
     entries: IndexMap<String, DeviceEntry>,
     table_state: TableState,
-    header_note: Notice,
     adb_error: Notice,
+    header_note: Notice,
 }
 
 struct DeviceEntry {
     device: AdbDevice,
     selected: bool,
     marked_for_removal: bool,
-}
-
-/// Message that hides itself once `REFRESH_EVERY` has passed since it was shown.
-#[derive(Default)]
-struct Notice {
-    shown: Option<(String, Instant)>,
-}
-
-impl Notice {
-    ////////////////////////////////////////////////////////////////////////////////
-    fn show(&mut self, text: String) {
-        self.shown = Some((text, Instant::now()));
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
-    fn text(&self) -> Option<&str> {
-        let (text, shown_at) = self.shown.as_ref()?;
-        (shown_at.elapsed() < REFRESH_EVERY).then_some(text.as_str())
-    }
 }
 
 impl DevicePicker {
@@ -76,8 +58,8 @@ impl DevicePicker {
             mcp_url,
             entries: Default::default(),
             table_state: Default::default(),
-            header_note: Default::default(),
             adb_error: Default::default(),
+            header_note: Default::default(),
         }
     }
 
