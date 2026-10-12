@@ -1,5 +1,10 @@
 # agent-mcp-adb
 
+[<video src="example.mp4" controls width="600">
+Your browser does not support the video tag.
+</video>
+](https://github.com/user-attachments/assets/a38a21e5-9b09-46af-b315-5ebb1e3285c7)
+
 Exposes the Android devices you pick (connected via `adb`) to AI agents over MCP.
 
 The MCP server (streamable HTTP, on a random local port by default) starts right away. A terminal UI lists devices
